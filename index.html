@@ -4,8 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#2b2b2b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Calculadora de Mercado">
 
-  <title>Calculadora de Valeska</title>
+  <title>Calculadora de Mercado</title>
 
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="imagens/favicon.png">
@@ -286,7 +290,7 @@
   <div class="container">
 
     <div class="topbar glass">
-      <h1>🛒 Calculadora de Valeska</h1>
+      <h1>🛒 Calculadora de Mercado</h1>
 
       <div class="actions">
         <button class="secondary" onclick="toggleTheme()">🌙 Tema</button>
@@ -309,12 +313,12 @@
 
   <div class="modal" id="aboutModal">
     <div class="modal-content glass">
-      <h3>Calculadora de Valeska</h3>
+      <h3>Calculadora de Mercado</h3>
 
-      <p><strong>Versão:</strong> 1.2 (alpha)</p>
-      <p><strong>Desenvolvedor:</strong> César Santana</p>
+      <p><strong>Versão:</strong> 1.0.0</p>
+      <p><strong>Desenvolvedor:</strong> César</p>
       <p>
-        Aplicação PWA para comparação de custo-benefício
+        Aplicativo PWA para comparação de custo-benefício
         entre produtos por peso, volume e unidade.
       </p>
 
@@ -370,7 +374,7 @@
             <input
               type="number"
               step="0.01"
-              placeholder="Quantidade, peso.."
+              placeholder="Quantidade"
               value="${product.quantity}"
               oninput="updateProduct(${index}, 'quantity', this.value)"
             >
