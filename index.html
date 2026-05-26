@@ -140,7 +140,7 @@
 
     .fields {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr auto;
+      grid-template-columns: repeat(5,1fr) auto;
       gap: 12px;
     }
 
@@ -315,8 +315,9 @@
     <div class="modal-content glass">
       <h3>Calculadora de Mercado</h3>
 
-      <p><strong>Versão:</strong> 1.0.0</p>
-      <p><strong>Desenvolvedor:</strong> César</p>
+      <p><strong>Versão:</strong> 1.3 (alpha)</p>
+      <p><strong>Desenvolvido por:</strong> César Santana</p>
+	  <p>Sousa - Paraiba | 2026</p>
       <p>
         Aplicativo PWA para comparação de custo-benefício
         entre produtos por peso, volume e unidade.
@@ -344,7 +345,9 @@
 
     function createEmptyProduct(){
       return {
-        quantity: '',
+        packages: 1,
+        items: 1,
+        content: '',
         unit: 'kg',
         price: ''
       };
@@ -373,10 +376,28 @@
 
             <input
               type="number"
+              step="1"
+              min="1"
+              placeholder="Pacotes"
+              value="${product.packages}"
+              oninput="updateProduct(${index}, 'packages', this.value || 1)"
+            >
+
+            <input
+              type="number"
+              step="1"
+              min="1"
+              placeholder="Itens"
+              value="${product.items}"
+              oninput="updateProduct(${index}, 'items', this.value || 1)"
+            >
+
+            <input
+              type="number"
               step="0.01"
-              placeholder="Quantidade"
-              value="${product.quantity}"
-              oninput="updateProduct(${index}, 'quantity', this.value)"
+              placeholder="Conteúdo"
+              value="${product.content}"
+              oninput="updateProduct(${index}, 'content', this.value)"
             >
 
             <select
@@ -452,19 +473,23 @@
       return 'unidade';
     }
 
-    function normalize(quantity,unit){
-      quantity = parseFloat(quantity);
+    function normalize(content, unit, packages = 1, items = 1){
+      content = parseFloat(content);
+      packages = parseFloat(packages || 1);
+      items = parseFloat(items || 1);
 
-      if(unit === 'g') return quantity / 1000;
-      if(unit === 'ml') return quantity / 1000;
+      let total = packages * items * content;
 
-      return quantity;
+      if(unit === 'g') return total / 1000;
+      if(unit === 'ml') return total / 1000;
+
+      return total;
     }
 
     function calculateRanking(){
 
       const validProducts = products.filter(p =>
-        p.quantity && p.price
+        p.content && p.price
       );
 
       rankingList.innerHTML = '';
@@ -490,7 +515,12 @@
 
       const ranking = validProducts.map((p,index)=>{
 
-        const normalized = normalize(p.quantity,p.unit);
+        const normalized = normalize(
+          p.content,
+          p.unit,
+          p.packages,
+          p.items
+        );
 
         return {
           name: `Produto ${products.indexOf(p)+1}`,
@@ -517,6 +547,10 @@
             <strong>${index + 1}º ${item.name}</strong>
             <br>
             R$ ${item.cost.toFixed(2).replace('.',',')}/${item.unit}
+            <br>
+            <small>
+              Total calculado automaticamente
+            </small>
           </div>
 
           ${index === 0
