@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2b2b2b">
+
+  <title>Calculadora de Valeska</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="imagens/favicon.png">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    :root {
+      --bg: rgba(240,240,240,0.75);
+      --card: rgba(255,255,255,0.35);
+      --text: #222;
+      --border: rgba(255,255,255,0.4);
+      --shadow: rgba(0,0,0,0.12);
+      --accent: #2f9e44;
+      --danger: #d6336c;
+    }
+
+    body.dark {
+      --bg: rgba(34,34,34,0.92);
+      --card: rgba(60,60,60,0.35);
+      --text: #f1f1f1;
+      --border: rgba(255,255,255,0.08);
+      --shadow: rgba(0,0,0,0.4);
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg,#cfcfcf,#e5e5e5);
+      color: var(--text);
+      padding: 20px;
+      transition: 0.4s;
+    }
+
+    body.dark {
+      background:
+        linear-gradient(135deg,#2b2b2b,#444);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .glass {
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 8px 32px var(--shadow);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .secondary {
+      background: rgba(120,120,120,0.25);
+      color: var(--text);
+    }
+
+    .danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .product-card {
+      padding: 18px;
+      animation: slideUp 0.35s ease;
+    }
+
+    .product-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .product-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.15);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      transform: scale(1.01);
+    }
+
+    option {
+      color: black;
+    }
+
+    .ranking {
+      margin-top: 25px;
+      padding: 20px;
+    }
+
+    .ranking h2 {
+      margin-bottom: 16px;
+    }
+
+    .ranking-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px;
+      margin-bottom: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.12);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .best {
+      border: 2px solid var(--accent);
+      background: rgba(47,158,68,0.15);
+    }
+
+    .badge {
+      background: var(--accent);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .error {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(214,51,108,0.18);
+      color: #ff4d88;
+      display: none;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      animation: scaleIn 0.3s ease;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 14px;
+    }
+
+    .modal-content p {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @media (max-width: 700px) {
+      .fields {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .actions {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="topbar glass">
+      <h1>🛒 Calculadora de Valeska</h1>
+
+      <div class="actions">
+        <button class="secondary" onclick="toggleTheme()">🌙 Tema</button>
+        <button class="secondary" onclick="openAbout()">ℹ️ Sobre</button>
+        <button class="primary" onclick="addProduct()">＋ Produto</button>
+        <button class="danger" onclick="clearAll()">🗑 Limpar</button>
+      </div>
+    </div>
+
+    <div id="productList" class="product-list"></div>
+
+    <div id="error" class="error glass"></div>
+
+    <div id="ranking" class="ranking glass">
+      <h2>🏆 Ranking</h2>
+      <div id="rankingList"></div>
+    </div>
+
+  </div>
+
+  <div class="modal" id="aboutModal">
+    <div class="modal-content glass">
+      <h3>Calculadora de Valeska</h3>
+
+      <p><strong>Versão:</strong> 1.2 (alpha)</p>
+      <p><strong>Desenvolvedor:</strong> César Santana</p>
+      <p>
+        Aplicação PWA para comparação de custo-benefício
+        entre produtos por peso, volume e unidade.
+      </p>
+
+      <button class="primary" onclick="closeAbout()">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const productList = document.getElementById('productList');
+    const rankingList = document.getElementById('rankingList');
+    const errorBox = document.getElementById('error');
+
+    let products = JSON.parse(localStorage.getItem('market-products')) || [];
+
+    if(products.length === 0){
+      products = [
+        createEmptyProduct(),
+        createEmptyProduct()
+      ];
+    }
+
+    function createEmptyProduct(){
+      return {
+        quantity: '',
+        unit: 'kg',
+        price: ''
+      };
+    }
+
+    function renderProducts(){
+      productList.innerHTML = '';
+
+      products.forEach((product,index)=>{
+
+        const card = document.createElement('div');
+        card.className = 'product-card glass';
+
+        card.innerHTML = `
+          <div class="product-header">
+            <div class="product-title">
+              Produto ${index + 1}
+            </div>
+
+            <button class="danger" onclick="removeProduct(${index})">
+              ✕
+            </button>
+          </div>
+
+          <div class="fields">
+
+            <input
+              type="number"
+              step="0.01"
+              placeholder="Quantidade, peso.."
+              value="${product.quantity}"
+              oninput="updateProduct(${index}, 'quantity', this.value)"
+            >
+
+            <select
+              onchange="updateUnit(this.value)"
+            >
+              <option value="kg" ${product.unit === 'kg' ? 'selected' : ''}>kg</option>
+              <option value="g" ${product.unit === 'g' ? 'selected' : ''}>g</option>
+              <option value="L" ${product.unit === 'L' ? 'selected' : ''}>L</option>
+              <option value="ml" ${product.unit === 'ml' ? 'selected' : ''}>ml</option>
+              <option value="un" ${product.unit === 'un' ? 'selected' : ''}>un</option>
+            </select>
+
+            <input
+              type="text"
+              placeholder="R$ 0,00"
+              value="${formatCurrency(product.price)}"
+              oninput="handleCurrencyInput(event, ${index})"
+            >
+
+          </div>
+        `;
+
+        productList.appendChild(card);
+      });
+
+      calculateRanking();
+      saveData();
+    }
+
+    function updateProduct(index, field, value){
+      products[index][field] = value;
+      calculateRanking();
+      saveData();
+    }
+
+    function updateUnit(unit){
+      products = products.map(product => ({
+        ...product,
+        unit
+      }));
+
+      renderProducts();
+    }
+
+    function handleCurrencyInput(event,index){
+      let value = event.target.value.replace(/\D/g,'');
+
+      value = (Number(value)/100).toFixed(2) + '';
+
+      value = value.replace('.',',');
+      value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g,'$1.');
+
+      value = 'R$ ' + value;
+
+      event.target.value = value;
+
+      const numeric = parseFloat(
+        value
+        .replace('R$ ','')
+        .replace(/\./g,'')
+        .replace(',','.')
+      );
+
+      products[index].price = numeric;
+
+      calculateRanking();
+      saveData();
+    }
+
+    function getCategory(unit){
+      if(['kg','g'].includes(unit)) return 'peso';
+      if(['L','ml'].includes(unit)) return 'volume';
+      return 'unidade';
+    }
+
+    function normalize(quantity,unit){
+      quantity = parseFloat(quantity);
+
+      if(unit === 'g') return quantity / 1000;
+      if(unit === 'ml') return quantity / 1000;
+
+      return quantity;
+    }
+
+    function calculateRanking(){
+
+      const validProducts = products.filter(p =>
+        p.quantity && p.price
+      );
+
+      rankingList.innerHTML = '';
+
+      if(validProducts.length < 2){
+        errorBox.style.display = 'none';
+        return;
+      }
+
+      const category = getCategory(validProducts[0].unit);
+
+      const invalid = validProducts.some(
+        p => getCategory(p.unit) !== category
+      );
+
+      if(invalid){
+        errorBox.style.display = 'block';
+        errorBox.innerHTML = 'Não é possível comparar produtos com tipos de medida diferentes.';
+        return;
+      }
+
+      errorBox.style.display = 'none';
+
+      const ranking = validProducts.map((p,index)=>{
+
+        const normalized = normalize(p.quantity,p.unit);
+
+        return {
+          name: `Produto ${products.indexOf(p)+1}`,
+          cost: p.price / normalized,
+          unit: category === 'peso'
+            ? 'kg'
+            : category === 'volume'
+              ? 'L'
+              : 'un'
+        };
+
+      }).sort((a,b)=>a.cost - b.cost);
+
+      ranking.forEach((item,index)=>{
+
+        const div = document.createElement('div');
+
+        div.className = index === 0
+          ? 'ranking-item best'
+          : 'ranking-item';
+
+        div.innerHTML = `
+          <div>
+            <strong>${index + 1}º ${item.name}</strong>
+            <br>
+            R$ ${item.cost.toFixed(2).replace('.',',')}/${item.unit}
+          </div>
+
+          ${index === 0
+            ? '<div class="badge">Melhor opção</div>'
+            : ''
+          }
+        `;
+
+        rankingList.appendChild(div);
+      });
+    }
+
+    function addProduct(){
+      products.push(createEmptyProduct());
+      renderProducts();
+    }
+
+    function removeProduct(index){
+      if(products.length <= 1) return;
+
+      products.splice(index,1);
+      renderProducts();
+    }
+
+    function clearAll(){
+      localStorage.removeItem('market-products');
+
+      products = [
+        createEmptyProduct(),
+        createEmptyProduct()
+      ];
+
+      renderProducts();
+    }
+
+    function saveData(){
+      localStorage.setItem(
+        'market-products',
+        JSON.stringify(products)
+      );
+    }
+
+    function formatCurrency(value){
+      if(!value) return '';
+
+      return value.toLocaleString('pt-BR', {
+        style:'currency',
+        currency:'BRL'
+      });
+    }
+
+    function toggleTheme(){
+      document.body.classList.toggle('dark');
+
+      localStorage.setItem(
+        'theme',
+        document.body.classList.contains('dark')
+          ? 'dark'
+          : 'light'
+      );
+    }
+
+    function loadTheme(){
+      const saved = localStorage.getItem('theme');
+
+      if(saved === 'dark'){
+        document.body.classList.add('dark');
+      }
+    }
+
+    function openAbout(){
+      document.getElementById('aboutModal').style.display = 'flex';
+    }
+
+    function closeAbout(){
+      document.getElementById('aboutModal').style.display = 'none';
+    }
+
+    window.onclick = function(e){
+      const modal = document.getElementById('aboutModal');
+
+      if(e.target === modal){
+        closeAbout();
+      }
+    }
+
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('service-worker.js');
+    }
+
+    loadTheme();
+    renderProducts();
+  </script>
+
+</body>
+</html>
