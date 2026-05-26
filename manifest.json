@@ -1,8 +1,8 @@
 {
   "name": "Calculadora de Mercado",
-  "short_name": "Calculadora - Vlsk",
+  "short_name": "Mercado",
   "start_url": "./index.html",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#2b2b2b",
   "theme_color": "#2b2b2b",
   "orientation": "portrait-primary",
