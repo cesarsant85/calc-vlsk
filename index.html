@@ -3,647 +3,982 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#2b2b2b">
+  <meta name="theme-color" content="#0a0a0a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Calculadora de Mercado">
-
+  <meta name="apple-mobile-web-app-title" content="Mercado">
   <title>Calculadora de Mercado</title>
-
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="imagens/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
     }
 
     :root {
-      --bg: rgba(240,240,240,0.75);
-      --card: rgba(255,255,255,0.35);
-      --text: #222;
-      --border: rgba(255,255,255,0.4);
-      --shadow: rgba(0,0,0,0.12);
-      --accent: #2f9e44;
-      --danger: #d6336c;
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --surface2: #f0efe9;
+      --border: #e2e0d8;
+      --border2: #c8c6bc;
+      --text: #1a1916;
+      --text2: #6b6963;
+      --text3: #a09e98;
+      --accent: #1d7a4a;
+      --accent-light: #e8f5ee;
+      --accent-text: #145c37;
+      --danger: #c0392b;
+      --danger-light: #fdf0ef;
+      --amber: #b45309;
+      --amber-light: #fef3c7;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.1);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --radius-xs: 6px;
+      --font: 'DM Sans', sans-serif;
+      --mono: 'DM Mono', monospace;
     }
 
     body.dark {
-      --bg: rgba(34,34,34,0.92);
-      --card: rgba(60,60,60,0.35);
-      --text: #f1f1f1;
-      --border: rgba(255,255,255,0.08);
-      --shadow: rgba(0,0,0,0.4);
+      --bg: #0f0f0d;
+      --surface: #1a1916;
+      --surface2: #242320;
+      --border: #2e2d28;
+      --border2: #3d3c36;
+      --text: #f0ede8;
+      --text2: #9a9790;
+      --text3: #5a5850;
+      --accent: #34c97a;
+      --accent-light: #0d2e1b;
+      --accent-text: #5de09a;
+      --danger: #e05c4c;
+      --danger-light: #2a1210;
+      --amber: #fbbf24;
+      --amber-light: #2a2008;
+      --shadow: 0 1px 3px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.3);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
     }
 
     body {
-      min-height: 100vh;
-      background:
-        linear-gradient(135deg,#cfcfcf,#e5e5e5);
+      font-family: var(--font);
+      background: var(--bg);
       color: var(--text);
-      padding: 20px;
-      transition: 0.4s;
-    }
-
-    body.dark {
-      background:
-        linear-gradient(135deg,#2b2b2b,#444);
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+      transition: background 0.3s, color 0.3s;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
-      max-width: 900px;
-      margin: auto;
-      animation: fadeIn 0.5s ease;
+      max-width: 780px;
+      margin: 0 auto;
     }
 
-    .glass {
-      background: var(--card);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      box-shadow: 0 8px 32px var(--shadow);
-    }
-
-    .topbar {
+    /* HEADER */
+    .header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 18px;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: 1.6rem;
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    button {
-      border: none;
-      border-radius: 14px;
-      padding: 12px 16px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      opacity: 0.9;
-    }
-
-    .primary {
-      background: var(--accent);
-      color: white;
-    }
-
-    .secondary {
-      background: rgba(120,120,120,0.25);
-      color: var(--text);
-    }
-
-    .danger {
-      background: var(--danger);
-      color: white;
-    }
-
-    .product-list {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .product-card {
-      padding: 18px;
-      animation: slideUp 0.35s ease;
-    }
-
-    .product-header {
-      display: flex;
       justify-content: space-between;
+      margin-bottom: 32px;
+      padding: 0 4px;
+    }
+
+    .header-brand {
+      display: flex;
       align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .product-title {
-      font-size: 1.1rem;
-      font-weight: bold;
-    }
-
-    .fields {
-      display: grid;
-      grid-template-columns: repeat(5,1fr) auto;
       gap: 12px;
     }
 
-    input,
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: var(--text);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--bg);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .brand-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-sub {
+      font-size: 0.72rem;
+      color: var(--text3);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* BUTTONS */
+    .btn {
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--text2);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--border); color: var(--text); }
+
+    .btn-primary {
+      background: var(--text);
+      color: var(--bg);
+    }
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid transparent;
+    }
+    .btn-danger:hover { border-color: var(--danger); }
+
+    .btn-icon {
+      width: 38px; height: 38px;
+      padding: 0;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+    }
+
+    /* INSTALL BANNER */
+    #installBanner {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      align-items: center;
+      gap: 14px;
+    }
+
+    .install-icon {
+      width: 44px; height: 44px;
+      background: var(--accent-light);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .install-text { flex: 1; }
+    .install-title { font-size: 0.9rem; font-weight: 600; }
+    .install-sub { font-size: 0.78rem; color: var(--text2); margin-top: 2px; }
+
+    .install-actions { display: flex; gap: 8px; align-items: center; }
+
+    .btn-install {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      font-family: var(--font);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.18s;
+    }
+    .btn-install:hover { opacity: 0.88; }
+
+    .btn-dismiss {
+      background: none; border: none;
+      color: var(--text3); cursor: pointer;
+      font-size: 18px; line-height: 1;
+      padding: 4px;
+    }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 12px;
+      padding-left: 2px;
+    }
+
+    /* PRODUCT CARD */
+    .product-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s;
+      animation: slideIn 0.25s ease;
+    }
+
+    .product-card:hover { border-color: var(--border2); }
+
+    .product-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .product-num {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .num-badge {
+      width: 28px; height: 28px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text2);
+      font-family: var(--mono);
+    }
+
+    .product-label {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text2);
+    }
+
+    /* FIELDS GRID */
+    .fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+
+    .field-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding-left: 2px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.18s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(29,122,74,0.1);
+    }
+
+    input::placeholder { color: var(--text3); }
+
+    .price-input-wrap { position: relative; }
+    .price-prefix {
+      position: absolute;
+      left: 13px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.82rem;
+      color: var(--text3);
+      pointer-events: none;
+      font-family: var(--mono);
+    }
+    .price-input-wrap input { padding-left: 32px; font-family: var(--mono); }
+
+    .unit-content-row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 10px;
+    }
+
     select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23999' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+
+    option { color: #222; background: white; }
+
+    /* ADD PRODUCT BTN */
+    .add-product-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       width: 100%;
       padding: 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.15);
-      color: var(--text);
-      font-size: 1rem;
-      outline: none;
-      transition: 0.3s;
+      border-radius: var(--radius);
+      border: 1.5px dashed var(--border2);
+      background: transparent;
+      color: var(--text3);
+      font-family: var(--font);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-bottom: 28px;
     }
-
-    input:focus,
-    select:focus {
+    .add-product-btn:hover {
+      background: var(--surface);
       border-color: var(--accent);
-      transform: scale(1.01);
+      color: var(--accent);
     }
 
-    option {
-      color: black;
-    }
-
-    .ranking {
-      margin-top: 25px;
-      padding: 20px;
-    }
-
-    .ranking h2 {
+    /* ERROR */
+    .error-msg {
+      display: none;
+      background: var(--danger-light);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 0.85rem;
       margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    /* RANKING */
+    .ranking-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .ranking-header {
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ranking-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .ranking-count {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px 9px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text2);
+      font-family: var(--mono);
+    }
+
+    .ranking-empty {
+      padding: 32px 20px;
+      text-align: center;
+      color: var(--text3);
+      font-size: 0.85rem;
     }
 
     .ranking-item {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 14px;
-      margin-bottom: 12px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.12);
-      animation: fadeIn 0.3s ease;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      gap: 14px;
+      transition: background 0.15s;
+      animation: fadeIn 0.2s ease;
     }
 
-    .best {
-      border: 2px solid var(--accent);
-      background: rgba(47,158,68,0.15);
+    .ranking-item:last-child { border-bottom: none; }
+    .ranking-item:hover { background: var(--surface2); }
+
+    .rank-pos {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text3);
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
     }
 
-    .badge {
-      background: var(--accent);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: bold;
+    .rank-info { flex: 1; }
+    .rank-name { font-size: 0.88rem; font-weight: 600; margin-bottom: 2px; }
+    .rank-cost {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--text2);
     }
 
-    .error {
-      margin-top: 18px;
-      padding: 14px;
-      border-radius: 14px;
-      background: rgba(214,51,108,0.18);
-      color: #ff4d88;
+    .rank-bar-wrap {
+      width: 80px;
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .rank-bar {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--text3);
+      transition: width 0.4s ease;
+    }
+
+    .rank-bar.best { background: var(--accent); }
+
+    .best-badge {
+      background: var(--accent-light);
+      color: var(--accent-text);
+      border: 1px solid var(--accent);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    /* ABOUT MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
       display: none;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      display: none;
+      align-items: flex-end;
       justify-content: center;
-      align-items: center;
-      padding: 20px;
-      z-index: 999;
+      z-index: 1000;
+      padding: 0;
     }
 
-    .modal-content {
+    .modal-overlay.open { display: flex; }
+
+    .modal-sheet {
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      padding: 32px 24px 40px;
       width: 100%;
-      max-width: 420px;
-      padding: 24px;
-      animation: scaleIn 0.3s ease;
+      max-width: 520px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .modal-content h3 {
-      margin-bottom: 14px;
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: var(--border2);
+      border-radius: 2px;
+      margin: 0 auto 24px;
     }
 
-    .modal-content p {
+    .modal-app-icon {
+      width: 56px; height: 56px;
+      background: var(--text);
+      color: var(--bg);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      margin-bottom: 16px;
+    }
+
+    .modal-app-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .modal-version {
+      font-size: 0.8rem;
+      color: var(--text3);
+      font-family: var(--mono);
+      margin-bottom: 20px;
+    }
+
+    .modal-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    .modal-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
       margin-bottom: 10px;
-      line-height: 1.5;
+    }
+    .modal-row span:first-child { color: var(--text2); }
+    .modal-row span:last-child { font-weight: 500; }
+
+    .modal-desc {
+      font-size: 0.85rem;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-top: 16px;
+    }
+
+    /* FOOTER */
+    .footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text3);
+    }
+
+    /* ANIMATIONS */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes scaleIn {
-      from {
-        opacity: 0;
-        transform: scale(0.9);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+    /* RESPONSIVE */
+    @media (max-width: 520px) {
+      body { padding: 16px 12px 48px; }
+
+      .header { margin-bottom: 24px; }
+
+      .brand-name { font-size: 0.95rem; }
+
+      .fields { grid-template-columns: 1fr; }
+      .unit-content-row { grid-template-columns: 1fr 1fr; }
+
+      .header-actions .btn-ghost:not(.btn-icon) span.label { display: none; }
+
+      #installBanner { flex-wrap: wrap; }
+      .install-actions { width: 100%; justify-content: flex-end; }
     }
 
-    @media (max-width: 700px) {
-      .fields {
-        grid-template-columns: 1fr;
-      }
-
-      .topbar {
-        flex-direction: column;
-        gap: 14px;
-      }
-
-      .actions {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-    }
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
   </style>
 </head>
 <body>
 
   <div class="container">
 
-    <div class="topbar glass">
-      <h1>🛒 Calculadora de Mercado</h1>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-brand">
+        <div class="brand-icon">🛒</div>
+        <div>
+          <div class="brand-name">Calculadora de Mercado</div>
+          <div class="brand-sub">Comparador de preço por unidade</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-icon" onclick="toggleTheme()" title="Alternar tema">
+          <span id="themeIcon">🌙</span>
+        </button>
+        <button class="btn btn-ghost" onclick="openAbout()">
+          <span>ℹ️</span><span class="label">Sobre</span>
+        </button>
+        <button class="btn btn-danger" onclick="clearAll()">
+          <span>🗑</span><span class="label">Limpar</span>
+        </button>
+      </div>
+    </header>
 
-      <div class="actions">
-        <button class="secondary" onclick="toggleTheme()">🌙 Tema</button>
-        <button class="secondary" onclick="openAbout()">ℹ️ Sobre</button>
-        <button class="primary" onclick="addProduct()">＋ Produto</button>
-        <button class="danger" onclick="clearAll()">🗑 Limpar</button>
+    <!-- INSTALL BANNER -->
+    <div id="installBanner">
+      <div class="install-icon">📲</div>
+      <div class="install-text">
+        <div class="install-title">Instalar aplicativo</div>
+        <div class="install-sub">Acesso rápido, sem precisar do navegador</div>
+      </div>
+      <div class="install-actions">
+        <button class="btn-install" id="installBtn">Instalar</button>
+        <button class="btn-dismiss" onclick="dismissInstall()" title="Dispensar">✕</button>
       </div>
     </div>
 
+    <!-- PRODUCTS -->
+    <div class="section-label">Produtos</div>
     <div id="productList" class="product-list"></div>
 
-    <div id="error" class="error glass"></div>
+    <button class="add-product-btn" onclick="addProduct()">
+      <span style="font-size:18px">＋</span>
+      Adicionar produto
+    </button>
 
-    <div id="ranking" class="ranking glass">
-      <h2>🏆 Ranking</h2>
-      <div id="rankingList"></div>
+    <!-- ERROR -->
+    <div id="error" class="error-msg"></div>
+
+    <!-- RANKING -->
+    <div class="section-label">Resultado</div>
+    <div class="ranking-section">
+      <div class="ranking-header">
+        <span class="ranking-title">🏆 Ranking de custo-benefício</span>
+        <span class="ranking-count" id="rankCount">—</span>
+      </div>
+      <div id="rankingList">
+        <div class="ranking-empty">Preencha ao menos 2 produtos para comparar</div>
+      </div>
     </div>
 
+    <footer class="footer">
+      <p>Desenvolvido por <strong>César Santana</strong> · Sousa - Paraiba · 2026 · v.1.4</p>
+    </footer>
   </div>
 
-  <div class="modal" id="aboutModal">
-    <div class="modal-content glass">
-      <h3>Calculadora de Mercado</h3>
+  <!-- ABOUT MODAL -->
+  <div class="modal-overlay" id="aboutModal" onclick="handleModalClick(event)">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-app-icon">🛒</div>
+      <div class="modal-app-name">Calculadora de Mercado</div>
+      <div class="modal-version">v1.4 · PWA</div>
 
-      <p><strong>Versão:</strong> 1.3 (alpha)</p>
-      <p><strong>Desenvolvido por:</strong> César Santana</p>
-	  <p>Sousa - Paraiba | 2026</p>
-      <p>
-        Aplicativo PWA para comparação de custo-benefício
-        entre produtos por peso, volume e unidade.
+      <div class="modal-divider"></div>
+
+      <div class="modal-row">
+        <span>Desenvolvido por</span>
+        <span>César Santana</span>
+      </div>
+      <div class="modal-row">
+        <span>Local</span>
+        <span>Sousa - Paraíba</span>
+      </div>
+      <div class="modal-row">
+        <span>Ano</span>
+        <span>2026</span>
+      </div>
+
+      <p class="modal-desc">
+        Aplicativo PWA para comparação de custo-benefício entre produtos 
+        por peso, volume e unidade.
       </p>
 
-      <button class="primary" onclick="closeAbout()">
+      <div class="modal-divider"></div>
+
+      <button class="btn btn-primary" style="width:100%; justify-content:center; padding:14px;" onclick="closeAbout()">
         Fechar
       </button>
     </div>
   </div>
 
   <script>
-    const productList = document.getElementById('productList');
-    const rankingList = document.getElementById('rankingList');
-    const errorBox = document.getElementById('error');
+    /* ============================
+       STATE — sem persistência local
+       ============================ */
+    let products = [emptyProduct(), emptyProduct()];
+    let deferredPrompt = null;
 
-    let products = JSON.parse(localStorage.getItem('market-products')) || [];
-
-    if(products.length === 0){
-      products = [
-        createEmptyProduct(),
-        createEmptyProduct()
-      ];
+    function emptyProduct() {
+      return { packages: 1, items: 1, content: '', unit: 'kg', price: '' };
     }
 
-    function createEmptyProduct(){
-      return {
-        packages: 1,
-        items: 1,
-        content: '',
-        unit: 'kg',
-        price: ''
-      };
+    /* ============================
+       INSTALL PWA
+       ============================ */
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBanner').style.display = 'flex';
+    });
+
+    window.addEventListener('appinstalled', () => {
+      document.getElementById('installBanner').style.display = 'none';
+      deferredPrompt = null;
+    });
+
+    document.getElementById('installBtn').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if (outcome === 'accepted') {
+        document.getElementById('installBanner').style.display = 'none';
+      }
+    });
+
+    function dismissInstall() {
+      document.getElementById('installBanner').style.display = 'none';
     }
 
-    function renderProducts(){
-      productList.innerHTML = '';
+    /* ============================
+       RENDER
+       ============================ */
+    function render() {
+      const list = document.getElementById('productList');
+      list.innerHTML = '';
 
-      products.forEach((product,index)=>{
-
+      products.forEach((p, i) => {
         const card = document.createElement('div');
-        card.className = 'product-card glass';
-
+        card.className = 'product-card';
         card.innerHTML = `
-          <div class="product-header">
-            <div class="product-title">
-              Produto ${index + 1}
+          <div class="product-card-header">
+            <div class="product-num">
+              <div class="num-badge">${String(i + 1).padStart(2, '0')}</div>
+              <span class="product-label">Produto ${i + 1}</span>
             </div>
-
-            <button class="danger" onclick="removeProduct(${index})">
-              ✕
-            </button>
+            ${products.length > 1
+              ? `<button class="btn btn-danger" style="padding:7px 12px;font-size:0.8rem;" onclick="removeProduct(${i})">✕ Remover</button>`
+              : ''}
           </div>
 
           <div class="fields">
 
-            <input
-              type="number"
-              step="1"
-              min="1"
-              placeholder="Pacotes"
-              value="${product.packages}"
-              oninput="updateProduct(${index}, 'packages', this.value || 1)"
-            >
+            <div class="field-group">
+              <span class="field-label">Embalagens</span>
+              <input type="number" min="1" step="1" value="${p.packages}"
+                oninput="update(${i},'packages',+this.value||1)">
+            </div>
 
-            <input
-              type="number"
-              step="1"
-              min="1"
-              placeholder="Itens"
-              value="${product.items}"
-              oninput="updateProduct(${index}, 'items', this.value || 1)"
-            >
+            <div class="field-group">
+              <span class="field-label">Itens por emb.</span>
+              <input type="number" min="1" step="1" value="${p.items}"
+                oninput="update(${i},'items',+this.value||1)">
+            </div>
 
-            <input
-              type="number"
-              step="0.01"
-              placeholder="Conteúdo"
-              value="${product.content}"
-              oninput="updateProduct(${index}, 'content', this.value)"
-            >
+            <div class="unit-content-row">
+              <div class="field-group">
+                <span class="field-label">Unidade</span>
+                <select onchange="changeUnit(this.value)">
+                  ${['kg','g','L','ml','un'].map(u =>
+                    `<option value="${u}" ${p.unit===u?'selected':''}>${u}</option>`
+                  ).join('')}
+                </select>
+              </div>
 
-            <select
-              onchange="updateUnit(this.value)"
-            >
-              <option value="kg" ${product.unit === 'kg' ? 'selected' : ''}>kg</option>
-              <option value="g" ${product.unit === 'g' ? 'selected' : ''}>g</option>
-              <option value="L" ${product.unit === 'L' ? 'selected' : ''}>L</option>
-              <option value="ml" ${product.unit === 'ml' ? 'selected' : ''}>ml</option>
-              <option value="un" ${product.unit === 'un' ? 'selected' : ''}>un</option>
-            </select>
+              <div class="field-group">
+                <span class="field-label">Quantidade</span>
+                <input type="number" min="0" step="any" placeholder="0"
+                  value="${p.content}"
+                  oninput="update(${i},'content',this.value)">
+              </div>
+            </div>
 
-            <input
-              type="text"
-              placeholder="R$ 0,00"
-              value="${formatCurrency(product.price)}"
-              oninput="handleCurrencyInput(event, ${index})"
-            >
+            <div class="field-group" style="grid-column:1/-1">
+              <span class="field-label">Preço</span>
+              <div class="price-input-wrap">
+                <span class="price-prefix">R$</span>
+                <input type="text" inputmode="numeric" placeholder="0,00"
+                  value="${fmtPrice(p.price)}"
+                  oninput="handlePrice(event,${i})">
+              </div>
+            </div>
 
           </div>
         `;
-
-        productList.appendChild(card);
+        list.appendChild(card);
       });
 
-      calculateRanking();
-      saveData();
+      calcRanking();
     }
 
-    function updateProduct(index, field, value){
-      products[index][field] = value;
-      calculateRanking();
-      saveData();
+    function update(i, field, val) {
+      products[i][field] = val;
+      calcRanking();
     }
 
-    function updateUnit(unit){
-      products = products.map(product => ({
-        ...product,
-        unit
-      }));
-
-      renderProducts();
+    function changeUnit(unit) {
+      products = products.map(p => ({ ...p, unit }));
+      render();
     }
 
-    function handleCurrencyInput(event,index){
-      let value = event.target.value.replace(/\D/g,'');
-
-      value = (Number(value)/100).toFixed(2) + '';
-
-      value = value.replace('.',',');
-      value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g,'$1.');
-
-      value = 'R$ ' + value;
-
-      event.target.value = value;
-
-      const numeric = parseFloat(
-        value
-        .replace('R$ ','')
-        .replace(/\./g,'')
-        .replace(',','.')
-      );
-
-      products[index].price = numeric;
-
-      calculateRanking();
-      saveData();
+    function handlePrice(e, i) {
+      let raw = e.target.value.replace(/\D/g, '');
+      let num = (Number(raw) / 100).toFixed(2);
+      let fmt = num.replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+      e.target.value = fmt;
+      products[i].price = parseFloat(num);
+      calcRanking();
     }
 
-    function getCategory(unit){
-      if(['kg','g'].includes(unit)) return 'peso';
-      if(['L','ml'].includes(unit)) return 'volume';
+    /* ============================
+       RANKING
+       ============================ */
+    function cat(unit) {
+      if (['kg','g'].includes(unit)) return 'peso';
+      if (['L','ml'].includes(unit)) return 'volume';
       return 'unidade';
     }
 
-    function normalize(content, unit, packages = 1, items = 1){
-      content = parseFloat(content);
-      packages = parseFloat(packages || 1);
-      items = parseFloat(items || 1);
-
-      let total = packages * items * content;
-
-      if(unit === 'g') return total / 1000;
-      if(unit === 'ml') return total / 1000;
-
+    function normalize(p) {
+      let total = (p.packages||1) * (p.items||1) * parseFloat(p.content||0);
+      if (p.unit === 'g') return total / 1000;
+      if (p.unit === 'ml') return total / 1000;
       return total;
     }
 
-    function calculateRanking(){
+    function calcRanking() {
+      const errorEl = document.getElementById('error');
+      const rankEl  = document.getElementById('rankingList');
+      const countEl = document.getElementById('rankCount');
 
-      const validProducts = products.filter(p =>
-        p.content && p.price
-      );
+      const valid = products.filter(p => p.content && p.price);
 
-      rankingList.innerHTML = '';
-
-      if(validProducts.length < 2){
-        errorBox.style.display = 'none';
+      if (valid.length < 2) {
+        errorEl.style.display = 'none';
+        countEl.textContent = '—';
+        rankEl.innerHTML = `<div class="ranking-empty">Preencha ao menos 2 produtos para comparar</div>`;
         return;
       }
 
-      const category = getCategory(validProducts[0].unit);
-
-      const invalid = validProducts.some(
-        p => getCategory(p.unit) !== category
-      );
-
-      if(invalid){
-        errorBox.style.display = 'block';
-        errorBox.innerHTML = 'Não é possível comparar produtos com tipos de medida diferentes.';
+      const cats = [...new Set(valid.map(p => cat(p.unit)))];
+      if (cats.length > 1) {
+        errorEl.style.display = 'block';
+        errorEl.textContent = '⚠️ Não é possível comparar medidas de tipos diferentes (peso, volume, unidade).';
+        rankEl.innerHTML = '';
+        countEl.textContent = '—';
         return;
       }
 
-      errorBox.style.display = 'none';
+      errorEl.style.display = 'none';
 
-      const ranking = validProducts.map((p,index)=>{
+      const unitLabel = cats[0] === 'peso' ? 'kg' : cats[0] === 'volume' ? 'L' : 'un';
 
-        const normalized = normalize(
-          p.content,
-          p.unit,
-          p.packages,
-          p.items
-        );
+      const ranked = valid.map(p => ({
+        name: `Produto ${products.indexOf(p) + 1}`,
+        cost: p.price / normalize(p),
+        unit: unitLabel
+      })).sort((a, b) => a.cost - b.cost);
 
-        return {
-          name: `Produto ${products.indexOf(p)+1}`,
-          cost: p.price / normalized,
-          unit: category === 'peso'
-            ? 'kg'
-            : category === 'volume'
-              ? 'L'
-              : 'un'
-        };
+      const maxCost = ranked[ranked.length - 1].cost;
+      countEl.textContent = ranked.length;
 
-      }).sort((a,b)=>a.cost - b.cost);
-
-      ranking.forEach((item,index)=>{
+      rankEl.innerHTML = '';
+      ranked.forEach((item, idx) => {
+        const pct = Math.round((item.cost / maxCost) * 100);
+        const isBest = idx === 0;
 
         const div = document.createElement('div');
-
-        div.className = index === 0
-          ? 'ranking-item best'
-          : 'ranking-item';
-
+        div.className = 'ranking-item';
         div.innerHTML = `
-          <div>
-            <strong>${index + 1}º ${item.name}</strong>
-            <br>
-            R$ ${item.cost.toFixed(2).replace('.',',')}/${item.unit}
-            <br>
-            <small>
-              Total calculado automaticamente
-            </small>
+          <div class="rank-pos">${idx + 1}</div>
+          <div class="rank-info">
+            <div class="rank-name">${item.name}</div>
+            <div class="rank-cost">R$ ${item.cost.toFixed(2).replace('.', ',')} / ${item.unit}</div>
           </div>
-
-          ${index === 0
-            ? '<div class="badge">Melhor opção</div>'
-            : ''
-          }
+          <div class="rank-bar-wrap">
+            <div class="rank-bar ${isBest?'best':''}" style="width:${pct}%"></div>
+          </div>
+          ${isBest ? '<div class="best-badge">✓ Melhor</div>' : ''}
         `;
-
-        rankingList.appendChild(div);
+        rankEl.appendChild(div);
       });
     }
 
-    function addProduct(){
-      products.push(createEmptyProduct());
-      renderProducts();
+    /* ============================
+       UTILS
+       ============================ */
+    function addProduct() {
+      products.push(emptyProduct());
+      render();
+      setTimeout(() => {
+        document.getElementById('productList').lastElementChild
+          ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
     }
 
-    function removeProduct(index){
-      if(products.length <= 1) return;
-
-      products.splice(index,1);
-      renderProducts();
+    function removeProduct(i) {
+      if (products.length <= 1) return;
+      products.splice(i, 1);
+      render();
     }
 
-    function clearAll(){
-      localStorage.removeItem('market-products');
-
-      products = [
-        createEmptyProduct(),
-        createEmptyProduct()
-      ];
-
-      renderProducts();
+    function clearAll() {
+      products = [emptyProduct(), emptyProduct()];
+      render();
     }
 
-    function saveData(){
-      localStorage.setItem(
-        'market-products',
-        JSON.stringify(products)
-      );
+    function fmtPrice(v) {
+      if (!v) return '';
+      return Number(v).toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
     }
 
-    function formatCurrency(value){
-      if(!value) return '';
-
-      return value.toLocaleString('pt-BR', {
-        style:'currency',
-        currency:'BRL'
-      });
+    /* THEME */
+    function toggleTheme() {
+      const dark = document.body.classList.toggle('dark');
+      document.getElementById('themeIcon').textContent = dark ? '☀️' : '🌙';
+      sessionStorage.setItem('theme', dark ? 'dark' : 'light');
     }
 
-    function toggleTheme(){
-      document.body.classList.toggle('dark');
-
-      localStorage.setItem(
-        'theme',
-        document.body.classList.contains('dark')
-          ? 'dark'
-          : 'light'
-      );
-    }
-
-    function loadTheme(){
-      const saved = localStorage.getItem('theme');
-
-      if(saved === 'dark'){
+    function loadTheme() {
+      const t = sessionStorage.getItem('theme');
+      if (t === 'dark') {
         document.body.classList.add('dark');
+        document.getElementById('themeIcon').textContent = '☀️';
       }
     }
 
-    function openAbout(){
-      document.getElementById('aboutModal').style.display = 'flex';
+    /* MODAL */
+    function openAbout() {
+      document.getElementById('aboutModal').classList.add('open');
+    }
+    function closeAbout() {
+      document.getElementById('aboutModal').classList.remove('open');
+    }
+    function handleModalClick(e) {
+      if (e.target === e.currentTarget) closeAbout();
     }
 
-    function closeAbout(){
-      document.getElementById('aboutModal').style.display = 'none';
+    /* SERVICE WORKER */
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
     }
 
-    window.onclick = function(e){
-      const modal = document.getElementById('aboutModal');
-
-      if(e.target === modal){
-        closeAbout();
-      }
-    }
-
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('service-worker.js');
-    }
-
+    /* INIT */
     loadTheme();
-    renderProducts();
+    render();
   </script>
-
 </body>
 </html>
